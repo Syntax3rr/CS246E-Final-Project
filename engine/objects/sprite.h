@@ -4,6 +4,7 @@
 #include <tuple>
 #include <algorithm>
 
+namespace age {
 using std::vector, std::tuple, std::get;
 class Sprite {
     vector<vector<char>> sprite;
@@ -25,4 +26,5 @@ public:
     int getWidth() const noexcept { return width; }
     int getHeight() const noexcept { return height; }
 };
+}
 #endif

@@ -1,9 +1,11 @@
 #ifndef VISUALIZER_H
 #define VISUALIZER_H
-#include <ncurses.h>
 #include <string>
+#include <vector>
 #include <map>
 #include "../engine-constants.h"
+#include "../engine/engine.h"
+#include "../engine/objects/sprite.h"
 
 namespace age {
     class Engine;

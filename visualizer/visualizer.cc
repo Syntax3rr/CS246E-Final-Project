@@ -2,6 +2,7 @@
 
 namespace age {
     void Visualizer::loadCanvas() {
+        std::vector<Sprite> sprites = engine->getSprites();
         //TODO
     }
 
