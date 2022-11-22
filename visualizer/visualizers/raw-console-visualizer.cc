@@ -1,5 +1,5 @@
 #include "raw-console-visualizer.h"
-#include "../engine-constants.h"
+#include "../../engine-constants.h"
 
 namespace age {
     void RawConsoleVisualizer::drawScreen() {

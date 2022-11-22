@@ -4,9 +4,10 @@
 #include <string>
 #include <map>
 #include "../engine-constants.h"
-#include "../engine/engine.h"
 
 namespace age {
+    class Engine;
+
     class Visualizer {
         Engine& engine;
         std::map<size_t, char[C_HEIGHT][C_WIDTH]> canvas; //Full 3D canvas space, [z][y][x]
