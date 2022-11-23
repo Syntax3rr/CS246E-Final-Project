@@ -19,8 +19,14 @@ public:
     Entity(int x, int y, char c) : pos(Vec{x, y}), vel(), stateCount(1), currentState(0), width(std::vector<int>{ 1 }), height(std::vector<int>{ 1 }) {}
     
     const Vec& getPos() const noexcept { return pos; }
+    const Vec& getVel() const noexcept { return vel; }
     const Sprite& getSprite() const noexcept { return sprites[currentState]; }
+    const int getWidth() const noexcept { return width[currentState]; }
+    const int getHeight() const noexcept { return height[currentState]; }
     bool checkCollision(const Entity& other) const noexcept;
+
+    void update();
+    
 };
 }
 #endif
