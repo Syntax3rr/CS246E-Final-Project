@@ -6,27 +6,29 @@
 #include "sprite.h"
 
 namespace age {
-class Entity {
-    Vec pos;
-    Vec vel;
-    int stateCount, currentState;
-    std::vector<int> width, height;
-    vector<Sprite> sprites;
-public:
-    Entity(int x, int y, Sprite sprite) : pos(Vec{x, y}), vel(), stateCount(1), currentState(0), width(std::vector<int>{ sprite.getWidth() }), height(std::vector<int>{ sprite.getHeight() }), sprites(vector<Sprite>{sprite}) {}
-    Entity(int x, int y, vector<Sprite> sprites) : pos(Vec{x, y}), vel(), stateCount(sprites.size()), currentState(0), width(age::transform<Sprite, int>(sprites, [](Sprite a) 
-        {return a.getWidth();})), height(transform<Sprite, int>(sprites, [](Sprite a) {return a.getHeight();})) {}
-    Entity(int x, int y, char c) : pos(Vec{x, y}), vel(), stateCount(1), currentState(0), width(std::vector<int>{ 1 }), height(std::vector<int>{ 1 }) {}
-    
-    const Vec& getPos() const noexcept { return pos; }
-    const Vec& getVel() const noexcept { return vel; }
-    const Sprite& getSprite() const noexcept { return sprites[currentState]; }
-    const int getWidth() const noexcept { return width[currentState]; }
-    const int getHeight() const noexcept { return height[currentState]; }
-    bool checkCollision(const Entity& other) const noexcept;
+    class Entity {
+        Vec pos;
+        Vec vel;
+        int stateCount, currentState;
+        std::vector<int> width, height;
+        vector<Sprite> sprites;
+    public:
+        Entity(int x, int y, Sprite sprite) : pos(Vec{ x, y }), vel(), stateCount(1), currentState(0), width(std::vector<int>{ sprite.getWidth() }), height(std::vector<int>{ sprite.getHeight() }), sprites(vector<Sprite>{sprite}) {}
+        Entity(int x, int y, vector<Sprite> sprites) : pos(Vec{ x, y }), vel(), stateCount(sprites.size()), currentState(0), width(age::transform<Sprite, int>(sprites, [](Sprite a) {return a.getWidth();})), height(transform<Sprite, int>(sprites, [](Sprite a) {return a.getHeight();})) {}
+        Entity(int x, int y, char c) : pos(Vec{ x, y }), vel(), stateCount(1), currentState(0), width(std::vector<int>{ 1 }), height(std::vector<int>{ 1 }) {}
 
-    void update();
-    
-};
+        const Vec& getPos() const noexcept { return pos; }
+        const Vec& getVel() const noexcept { return vel; }
+        const Sprite& getSprite() const noexcept { return sprites[currentState]; }
+        const int getWidth() const noexcept { return width[currentState]; }
+        const int getHeight() const noexcept { return height[currentState]; }
+        bool checkCollision(const Entity& other) const noexcept;
+
+        void update();
+
+        void setPos(const Vec& newPos) noexcept { pos = newPos; }
+        void setVel(const Vec& newVel) noexcept { vel = newVel; }
+        void setState(int newState);
+    };
 }
 #endif

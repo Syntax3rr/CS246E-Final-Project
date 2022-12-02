@@ -5,7 +5,9 @@
 #include <algorithm>
 
 namespace age {
-using std::vector, std::tuple, std::get;
+using std::vector;
+using std::tuple;
+using std::get;
 class Sprite {
     vector<vector<char>> sprite;
     int width, height;
@@ -20,9 +22,10 @@ public:
             sprite[get<1>(t)][get<0>(t)] = get<2>(t);
         }
     }
-    Sprite(int width, int height, char fill) : sprite(vector(height, vector(width, fill))), width(width), height(height) {}
-    Sprite(char fill) : sprite(vector(1, vector(1, fill))), width(1), height(1) {}
+    Sprite(int width, int height, char fill) : sprite(vector<vector<char>>(height, vector<char>(width, fill))), width(width), height(height) {}
+    Sprite(char fill) : sprite(vector<vector<char>>(1, vector<char>(1, fill))), width(1), height(1) {}
     vector<vector<char>> getData() const noexcept { return sprite; }
+    char getAt(int x, int y) const noexcept;
     int getWidth() const noexcept { return width; }
     int getHeight() const noexcept { return height; }
 };
