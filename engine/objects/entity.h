@@ -1,7 +1,7 @@
 #ifndef AGE_VISUALIZER_OBJECTS_VISUALOBJECT_H
 #define AGE_VISUALIZER_OBJECTS_VISUALOBJECT_H
 #include <vector>
-#include "../../math/vec.h"
+#include "../../helpers/math/vec.h"
 #include "../../helpers/functional-vector-transform.h"
 #include "sprite.h"
 
@@ -9,6 +9,7 @@ namespace age {
     class Entity {
         Vec pos;
         Vec vel;
+        
         int stateCount, currentState;
         std::vector<int> width, height;
         vector<Sprite> sprites;
