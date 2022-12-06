@@ -6,11 +6,9 @@
 #include "../../helpers/math/vec.h"
 #include "../../helpers/functional-vector-transform.h"
 #include "sprite.h"
-#include "entity-movement.h"
+#include "movement/entity-movement.h"
 
 using std::vector;
-using std::gcd;
-using std::abs;
 namespace age {
     class Entity {
         Vec pos;
