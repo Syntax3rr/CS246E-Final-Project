@@ -1,9 +1,34 @@
 #include "entity.h"
+#include <stdexcept>
 
 namespace age {
     void Entity::setState(int newState) {
         if (newState >= stateCount || newState < 0) throw std::out_of_range("Invalid state.");
         currentState = newState;
+    }
+
+    void Entity::stepVelocity() {
+        if (movements.size() && velBuffer == 0 && velStep == 0) { //If we're starting a new movement action
+            for (auto& movement : movements) movement.move(velBuffer); //Get the next movements
+            int velGCD = gcd(std::abs(velBuffer.x), std::abs(velBuffer.y));
+            velStep = Vec{ velBuffer.x / velGCD, velBuffer.y / velGCD }; //Get the natural number step ratio.
+        } else {
+            if (velStepBuffer == 0) {
+                velStepBuffer = velStep;
+                velBuffer -= velStep;
+            } else {
+                if (velStepBuffer.x == velStepBuffer.y) {
+                    velStepBuffer -= Vec{ 1, 1 };
+                    vel += Vec{ 1, 1 };
+                } else if (velStepBuffer.x > velStepBuffer.y) {
+                    velStepBuffer.x--;
+                    vel.x++;
+                } else {
+                    velStepBuffer.y--;
+                    vel.y++;
+                }
+            }
+        }
     }
 
     bool Entity::checkCollision(const Entity& other) const noexcept {
@@ -31,5 +56,5 @@ namespace age {
         return false;
     }
 
-    
+
 }
