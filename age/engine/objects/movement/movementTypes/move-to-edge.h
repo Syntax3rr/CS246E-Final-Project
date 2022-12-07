@@ -1,7 +1,6 @@
 #ifndef AGE_ENGINE_OBJECTS_MOVEMENT_MOVETOEDGE_H
 #define AGE_ENGINE_OBJECTS_MOVEMENT_MOVETOEDGE_H
-#include "entity-movement.h"
-#include "../../helpers/math/vec.h"
+#include "../entity-movement.h"
 
 namespace age {
     struct MoveToEdge : public EntityMovement {

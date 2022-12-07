@@ -4,16 +4,21 @@
 #include "../visualizer.h"
 
 namespace age {
+    class Engine;
+
     class RawConsoleVisualizer : public Visualizer {
-        std::ostream& out = std::cout;
+        std::ostream& out;
+
+    public:
+        RawConsoleVisualizer(Engine engine, std::ostream& out = std::cout) : Visualizer(engine), out(out) {}
         void clearScreen() { system("clear"); }
         void drawScreen();
-        void updateScreen   () override {
+        void updateScreen() override {
             clearScreen();
             drawScreen();
         }
     };
-    
+
 }
 
 

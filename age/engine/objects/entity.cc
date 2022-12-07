@@ -1,6 +1,10 @@
 #include "entity.h"
 #include <stdexcept>
+#include <numeric>
+#include <cmath>
 
+using std::gcd;
+using std::abs;
 namespace age {
     void Entity::setState(int newState) {
         if (newState >= stateCount || newState < 0) throw std::out_of_range("Invalid state.");
@@ -9,8 +13,8 @@ namespace age {
 
     void Entity::stepVelocity() {
         if (movements.size() && velBuffer == 0 && velStep == 0) { //If we're starting a new movement action
-            for (auto& movement : movements) movement.move(velBuffer); //Get the next movements
-            int velGCD = gcd(std::abs(velBuffer.x), std::abs(velBuffer.y));
+            for (auto& movement : movements) movement->move(velBuffer); //Get the next movements
+            int velGCD = gcd(abs(velBuffer.x), abs(velBuffer.y));
             velStep = Vec{ velBuffer.x / velGCD, velBuffer.y / velGCD }; //Get the natural number step ratio.
         } else {
             if (velStepBuffer == 0) {
@@ -32,10 +36,14 @@ namespace age {
     }
 
     bool Entity::checkCollision(const Entity& other) const noexcept {
-        if (pos.x + getWidth() <= other.pos.x) return false; // This is to the left of other.
-        if (pos.x >= other.pos.x + other.getWidth()) return false; // This is to the right of other.
-        if (pos.y + getHeight() <= other.pos.y) return false; // This is above other.
-        if (pos.y >= other.pos.y + other.getHeight()) return false; // This is below other.
+        if ( // Fast check to see if the sprites can possibly overlap.
+            z != other.z || // Different z-levels.
+            pos.x + getWidth() <= other.pos.x || // This is to the left of other.
+            pos.x >= other.pos.x + other.getWidth() || // This is to the right of other.
+            pos.y + getHeight() <= other.pos.y || // This is above other.
+            pos.y >= other.pos.y + other.getHeight() // This is below other.
+        ) return false;
+
         // Check if the sprites overlap.
         // X and Y offsets
         Vec offset = pos - other.pos;

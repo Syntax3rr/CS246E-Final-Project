@@ -1,7 +1,6 @@
 #ifndef AGE_ENGINE_OBJECTS_MOVEMENT_MOVEMENTTYPES_MOVEINLINE_H
 #define AGE_ENGINE_OBJECTS_MOVEMENT_MOVEMENTTYPES_MOVEINLINE_H
-#include "entity-movement.h"
-#include "../../helpers/math/vec.h"
+#include "../entity-movement.h"
 
 namespace age {
     struct MoveInLine : public EntityMovement {

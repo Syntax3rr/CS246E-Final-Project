@@ -10,6 +10,7 @@ namespace age {
         void clearKeys() { for (auto k : keys) k.second = false; } // Clear all keys
         virtual void updateKeyStates() = 0; // Update the key states
     public:
+        Input() {};
         bool getKeyState(char key) { return keys[key]; }; // Get the state of a key
         void update() { updateKeyStates(); };
     };
