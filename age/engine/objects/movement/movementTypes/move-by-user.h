@@ -4,7 +4,7 @@
 #include "../../../../input/input.h"
 
 namespace age {
-    struct MoveByUser : public EntityMovement {
+    struct MoveByUser: public EntityMovement {
         Input& input;
 
         char forwardKey = 'w';
@@ -12,18 +12,18 @@ namespace age {
         char leftKey = 'a';
         char rightKey = 'd';
 
-        MoveByUser(Input& input) : input(input) {}
+        MoveByUser(Input& input): input(input) {}
 
         Vec& move(Vec& vel) override {
             if (input.getKeyState(forwardKey)) {
                 vel.y--;
-            } 
+            }
             if (input.getKeyState(backwardKey)) {
                 vel.y++;
             }
             if (input.getKeyState(leftKey)) {
                 vel.x--;
-            } 
+            }
             if (input.getKeyState(rightKey)) {
                 vel.x++;
             }

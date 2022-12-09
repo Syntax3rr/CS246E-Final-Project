@@ -3,10 +3,13 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include "../../engine-constants.h"
 #include "../../helpers/math/vec.h"
 #include "../../helpers/functional-vector-transform.h"
 #include "sprite.h"
 #include "movement/entity-movement.h"
+#include "collision/entity-collision.h"
+#include "update/update-type.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -18,6 +21,8 @@ namespace age {
         int z;
         Vec vel;
         vector<unique_ptr<EntityMovement>> movements;
+        vector<unique_ptr<EntityCollision>> collisions;
+        vector<unique_ptr<UpdateType>> updates;
 
     public:
         const bool persistant;
@@ -28,11 +33,15 @@ namespace age {
         vector<int> width, height;
         vector<Sprite> sprites;
 
+        bool visible = true;
+
         Vec velBuffer = Vec{};
         Vec velStep = Vec{};
         Vec velStepBuffer = Vec{};
 
     public:
+        int despawnTimer = 0;
+
         Entity(int x, int y, int z, Sprite sprite, bool persistant = false, vector<unique_ptr<EntityMovement>> movements = vector<unique_ptr<EntityMovement>>()) : 
             pos(Vec{ x, y }), z(z), vel(), movements(movements), persistant(persistant), playerControlled(std::find_if(movements.begin(), movements.end(), 
             [](auto  a) {return dynamic_cast<MoveByUser*> a;}) != movements.end()), stateCount(1), currentState(0), 
@@ -54,9 +63,14 @@ namespace age {
         const Sprite& getSprite() const noexcept { return sprites[currentState]; }
         int getWidth() const noexcept { return width[currentState]; }
         int getHeight() const noexcept { return height[currentState]; }
+        int getState() const noexcept { return currentState; }
         bool checkCollision(const Entity& other) const noexcept;
 
-        void update() {};
+        void update() {
+            for (auto& update : updates) {
+                update->onUpdate(*this);
+            }
+        };
 
         void stepVelocity();
 
@@ -69,6 +83,9 @@ namespace age {
 
         void setPos(const Vec& newPos) noexcept { pos = newPos; }
         void setVel(const Vec& newVel) noexcept { vel = newVel; }
+        void advanceState() noexcept {
+            currentState = (currentState + 1) % stateCount;
+        }
         void setState(int newState);
         void stop() noexcept {
             velBuffer.reset();

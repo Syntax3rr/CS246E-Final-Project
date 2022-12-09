@@ -28,6 +28,8 @@ namespace age {
                         if (entity.getPos().x < C_LEFT) entity.onCollision(edges[1]);
                         if (entity.getPos().x + entity.getWidth() > C_RIGHT) entity.onCollision(edges[3]);
                         if (entity.getPos().y + entity.getHeight() > C_BOTTOM) entity.onCollision(edges[4]);
+                    } else if (entity.getPos().x < 0 || entity.getPos().y < 0 || entity.getPos().x + entity.getWidth() > C_WIDTH || entity.getPos().y + entity.getHeight() > C_HEIGHT) {
+                        entity.onCollision(edges[0]);
                     }
                     entity.updatePosition();
                 }
