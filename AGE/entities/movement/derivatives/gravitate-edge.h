@@ -1,7 +1,7 @@
 #ifndef AGE_EVENTS_MOVEMENT_DERIVATIVES_GRAVITATEEDGE_H
 #define AGE_EVENTS_MOVEMENT_DERIVATIVES_GRAVITATEEDGE_H
 #include "../movement-base.h"
-#include "../../entities/entity.h"
+#include "../../../entities/entity.h"
 
 namespace age {
     enum Edge {
@@ -16,10 +16,13 @@ namespace age {
             edge == Edge::LEFT ? -velocity : edge == Edge::RIGHT ? velocity : 0,
             edge == Edge::TOP ? -velocity : edge == Edge::BOTTOM ? velocity : 0
         ) {}
+        GravitateEdge(const GravitateEdge& other): MovementBase(other) {}
 
         virtual const bool isPlayerControlled() const {return false;}
 
-        MovementBase* clone() const {return new GravitateEdge(*this);}
+        MovementBase* clone() const {return GravitateEdge(*this);}
+
+        MovementBase& 
     };
 }
 

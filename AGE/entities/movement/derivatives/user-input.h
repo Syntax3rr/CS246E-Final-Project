@@ -2,7 +2,7 @@
 #define AGE_EVENTS_MOVEMENT_DERIVATIVES_USERINPUT_H
 #include "../movement-base.h"
 #include "../../../entities/entity.h"
-#include "../../input/input.h"
+#include "../../../input/input.h"
 
 namespace age {
     class UserInput: public MovementBase {
@@ -14,15 +14,11 @@ namespace age {
         }
     public:
         UserInput(Entity& entity, Input* input): MovementBase(entity, 0, 0), input(input) {}
+        UserInput(const UserInput& other, Entity& entity): MovementBase(other, entity), input(other.input) {}
 
         virtual const bool isPlayerControlled() const { return true; }
 
-        MovementBase* clone() const { return new UserInput(*this); }
-
-        void initialize(Entity& entity) {
-            input = entity.getInput();
-            MovementBase::initialize(entity);
-        }
+        UpdateEvent* clone(Entity& entity) const override { return new UserInput(*this, entity); }
     };
 }
 

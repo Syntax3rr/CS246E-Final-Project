@@ -7,6 +7,7 @@ namespace age {
     class StraightLine : public MovementBase {
     public:
         StraightLine(Entity& entity, int vx, int vy) : MovementBase(entity, vx, vy) {}
+        StraightLine(const StraightLine& other) : MovementBase(other) {}
 
         virtual const bool isPlayerControlled() const {return false;}
 

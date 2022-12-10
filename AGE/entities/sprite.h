@@ -28,7 +28,7 @@ namespace age {
             }
         }
         Sprite(int width, int height, char fill): sprite(vector<vector<char>>(height, vector<char>(width, fill))), width(width), height(height) {}
-        Sprite(char c): sprite(vector<vector<char>>(1, vector<char>(1, fill))), width(1), height(1) {}
+        Sprite(char c): sprite(vector<vector<char>>(1, vector<char>(1, c))), width(1), height(1) {}
         Sprite(string str): sprite(vector<vector<char>>(1, vector<char>(str.begin(), str.end()))), width(str.size()), height(1) {}
         const vector<vector<char>>& getData() const noexcept { return sprite; }
         char getAt(int x, int y) const noexcept {

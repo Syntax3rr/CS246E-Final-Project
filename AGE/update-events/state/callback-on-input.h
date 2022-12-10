@@ -1,11 +1,11 @@
-#ifndef AGE_EVENTS_UPDATE_CALLBACKONINPUT_H
-#define AGE_EVENTS_UPDATE_CALLBACKONINPUT_H
+#ifndef AGE_UPDATEEVENTS_STATE_CALLBACKONINPUT_H
+#define AGE_UPDATEEVENTS_STATE_CALLBACKONINPUT_H
 #include <functional>
-#include "../event.h"
+#include "../update-event.h"
 #include "../../input/input.h"
 
 namespace age {
-    class CallbackOnInput : public Event {
+    class CallbackOnInput : public UpdateEvent {
         Input* input;
         char key;
         std::function<void()> callback;

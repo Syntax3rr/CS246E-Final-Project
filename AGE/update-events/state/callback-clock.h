@@ -1,10 +1,10 @@
-#ifndef AGE_EVENTS_UPDATE_CALLBACKCLOCK_H
-#define AGE_EVENTS_UPDATE_CALLBACKCLOCK_H
+#ifndef AGE_UPDATEEVENTS_STATE_CALLBACKCLOCK_H
+#define AGE_UPDATEEVENTS_STATE_CALLBACKCLOCK_H
 #include <functional>
-#include "../event.h"
+#include "../update-event.h"
 
 namespace age {
-    class CallbackClock : public Event {
+    class CallbackClock : public UpdateEvent {
         unsigned int ticksPerCycle;
         std::function<void()> callback;
         unsigned int ticks = 0;
