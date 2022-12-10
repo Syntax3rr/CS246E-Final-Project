@@ -7,15 +7,16 @@
 namespace age {
     void Engine::update() {
         for (auto i = entities.begin(); i != entities.end(); ++i) { //Entity position update
-            for (auto j = i->second.begin(); j != i->second.end(); ++j) {
-                Entity entity = *j;
+            bool removed = false;
+            for (auto j = i->second.begin(); j != i->second.end();) {
+                Entity& entity = **j;
                 entity.update(); //General update call
                 //Check if the entity needs to be culled
-                
+
                 while (entity.getVel() != 0) {
                     entity.stepVelocity();
                     for (auto k = j + 1; k != i->second.end(); ++k) {
-                        Entity other = *k;
+                        Entity other = **k;
                         if (entity.checkCollision(other)) {
                             entity.onCollision(other);
                             other.onCollision(entity);
@@ -28,24 +29,31 @@ namespace age {
                         if (entity.getPos().x < C_LEFT) entity.onCollision(edges[1]);
                         if (entity.getPos().x + entity.getWidth() > C_RIGHT) entity.onCollision(edges[3]);
                         if (entity.getPos().y + entity.getHeight() > C_BOTTOM) entity.onCollision(edges[4]);
-                    } else if (entity.getPos().x < 0 || entity.getPos().y < 0 || entity.getPos().x + entity.getWidth() > C_WIDTH || entity.getPos().y + entity.getHeight() > C_HEIGHT) {
-                        entity.onCollision(edges[0]);
+                    } else if (entity.getPos().x < 0 || entity.getPos().y < 0 || entity.getPos().x + entity.getWidth() >= C_WIDTH || entity.getPos().y + entity.getHeight() >= C_HEIGHT) {
+                        if (++(entity.despawnTimer) >= DESPAWN_TIME) {
+                            i->second.erase(j);
+                            removed = true;
+                            break;
+                        }
                     }
                     entity.updatePosition();
-                }
+                } 
+
+                if (removed) removed = false;
+                else ++j;
             }
         }
     }
 
     void Engine::addEntity(Entity& entity) {
-        entities[entity.getZ()].push_back(entity);
+        entities[entity.getZ()].push_back(&entity);
     }
 
     std::vector<Entity> Engine::getEntities() {
         std::vector<Entity> sprites;
         for (auto layer = entities.rbegin(); layer != entities.rend(); ++layer) { // We want to draw sprites from the highest layer first.
             for (auto& entity : layer->second)
-                sprites.push_back(entity);
+                sprites.push_back(*entity);
         }
         return sprites;
     }

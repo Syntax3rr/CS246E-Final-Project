@@ -20,8 +20,8 @@ public:
         for (auto t : bitmap) { // Insert the bitmap into the sprite.
             if (get<0>(t) >= width) width = get<0>(t) + 1;
             if (get<1>(t) >= height) height = get<1>(t) + 1;
-            sprite.resize(height, vector<char>(width, NULL));
-            sprite[get<1>(t)].resize(width, NULL);
+            sprite.resize(height, vector<char>(width, ' '));
+            sprite[get<1>(t)].resize(width, ' ');
             sprite[get<1>(t)][get<0>(t)] = get<2>(t);
         }
     }

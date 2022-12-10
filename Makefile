@@ -1,7 +1,7 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -Werror -MMD -lncurses -g
-EXEC = game
-OBJECTS = main.o # add other object files here
+CXXFLAGS = -std=c++14 -Werror -MMD -g
+EXEC = BH
+OBJECTS = bullethell.o # add other object files here
 DEPENDS = ${OBJECTS:.o=.d}
 
 ${EXEC}: ${OBJECTS}

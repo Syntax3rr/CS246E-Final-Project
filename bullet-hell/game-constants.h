@@ -1,0 +1,7 @@
+#ifndef BULLETHELL_GAMECONSTANTS_H
+#define BULLETHELL_GAMECONSTANTS_H
+
+const int MAX_LIVES = 3;
+const int MAX_BOMBS = 3;
+
+#endif
