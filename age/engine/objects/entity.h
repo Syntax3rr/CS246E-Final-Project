@@ -2,7 +2,7 @@
 #define AGE_VISUALIZER_OBJECTS_VISUALOBJECT_H
 #include <vector>
 #include <memory>
-#include <algorithm>
+#include <numeric>
 #include "../../engine-constants.h"
 #include "../../helpers/math/vec.h"
 #include "../../helpers/functional-vector-transform.h"
@@ -17,7 +17,7 @@ using std::unique_ptr;
 using std::initializer_list;
 namespace age {
     struct MoveByUser;
-    
+
     class Entity {
         Vec pos;
         int z;
@@ -25,10 +25,10 @@ namespace age {
         vector<unique_ptr<EntityMovement>> movements;
         vector<unique_ptr<EntityCollision>> collisions;
         vector<unique_ptr<UpdateType>> updates;
-    
+
     public:
         const bool persistant;
-        
+
     private:
         bool playerControlled; // Whether the movements vector contains player input or not.
 
@@ -45,25 +45,57 @@ namespace age {
     public:
         int despawnTimer = 0;
 
-        Entity(int x, int y, int z, Sprite sprite, bool persistant = false, initializer_list<EntityMovement> movements = {}, initializer_list<EntityCollision> collisions = {}, initializer_list<UpdateType> updates = {}) : 
-            pos(Vec{ x, y }), z(z), vel(), movements(), persistant(persistant), playerControlled(false), currentState(0), 
+        Entity(
+            int x, int y, int z, Sprite sprite, bool persistant = false,
+            initializer_list<unique_ptr<UpdateType>> updates = {},
+            initializer_list<unique_ptr<EntityCollision>> collisions = {},
+            initializer_list<unique_ptr<EntityMovement>> movements = {}
+        ):
+            pos(Vec{ x, y }), z(z), vel(), movements(), collisions(), updates(), persistant(persistant), playerControlled(std::reduce(movements.begin(), movements.end(), false,
+                [](auto a, bool b) {return b || a.isPlayerControlled();})), currentState(0),
             width(vector<int>{ sprite.getWidth() }), height(vector<int>{ sprite.getHeight() }), sprites(vector<Sprite>{sprite}) {
-                this->movements.reserve(movements.size());
-                for (auto& movement : movements) {
-                    this->movements.push_back(unique_ptr<EntityMovement>(movement.clone()));
-                    if (movement.isPlayerControlled()) playerControlled = true;
-                }
-            }
-        
-        Entity(int x, int y, int z, vector<Sprite> sprites, bool persistant = false, vector<unique_ptr<EntityMovement>> movements = vector<unique_ptr<EntityMovement>>()) : 
-            pos(Vec{ x, y }), z(z), vel(), movements(movements), persistant(persistant), playerControlled(std::find_if(movements.begin(), movements.end(), 
-            [](auto  a) {return dynamic_cast<MoveByUser*> a;}) != movements.end()), currentState(0), 
-            width(age::transform<Sprite, int>(sprites, [](Sprite a) {return a.getWidth();})), height(transform<Sprite, int>(sprites, [](Sprite a) {return a.getHeight();})) {}
-        
-        Entity(int x, int y, int z, char c, bool persistant = false, vector<unique_ptr<EntityMovement>> movements = vector<unique_ptr<EntityMovement>>()) : 
-            pos(Vec{ x, y }), z(z), vel(), movements(movements), persistant(persistant), playerControlled(std::find_if(movements.begin(), movements.end(), 
-            [](auto  a) {return dynamic_cast<MoveByUser*> a;}) != movements.end()), currentState(0), 
-            width(vector<int>{ 1 }), height(vector<int>{ 1 }) {}
+            this->updates.reserve(updates.size());
+            this->collisions.reserve(collisions.size());
+            this->movements.reserve(movements.size());
+            for (auto& i : updates) this->updates.push_back(i->clone());
+            for (auto& i : collisions) this->collisions.push_back(i->clone());
+            for (auto& i : movements) this->movements.push_back(i->clone());
+        }
+
+        Entity(
+            int x, int y, int z, vector<Sprite> sprites, bool persistant = false,
+            initializer_list<unique_ptr<UpdateType>> updates = {},
+            initializer_list<unique_ptr<EntityCollision>> collisions = {},
+            initializer_list<unique_ptr<EntityMovement>> movements = {}
+        ):
+            pos(Vec{ x, y }), z(z), vel(), movements(), collisions(), updates(), persistant(persistant), playerControlled(std::reduce(movements.begin(), movements.end(), false,
+                [](auto a, bool b) {return b || a.isPlayerControlled();})), currentState(0),
+            width(age::transform<Sprite, int>(sprites, [](Sprite a) {return a.getWidth();})), height(transform<Sprite, int>(sprites, [](Sprite a) {return a.getHeight();})) {
+            this->updates.reserve(updates.size());
+            this->collisions.reserve(collisions.size());
+            this->movements.reserve(movements.size());
+            for (auto& i : updates) this->updates.push_back(i->clone());
+            for (auto& i : collisions) this->collisions.push_back(i->clone());
+            for (auto& i : movements) this->movements.push_back(i->clone());
+        }
+
+        Entity(
+            int x, int y, int z, char c, bool persistant = false,
+            initializer_list<unique_ptr<UpdateType>> updates = {},
+            initializer_list<unique_ptr<EntityCollision>> collisions = {},
+            initializer_list<unique_ptr<EntityMovement>> movements = {}
+        ):
+            pos(Vec{ x, y }), z(z), vel(), movements(), collisions(), updates(),
+            persistant(persistant), playerControlled(std::reduce(movements.begin(), movements.end(), false,
+                [](auto a, bool b) {return b || a.isPlayerControlled();})), currentState(0),
+            width(vector<int>{ 1 }), height(vector<int>{ 1 }) {
+            this->updates.reserve(updates.size());
+            this->collisions.reserve(collisions.size());
+            this->movements.reserve(movements.size());
+            for (auto& i : updates) this->updates.push_back(i->clone());
+            for (auto& i : collisions) this->collisions.push_back(i->clone());
+            for (auto& i : movements) this->movements.push_back(i->clone());
+        }
 
         Vec getPos() const noexcept { return pos; }
         int getZ() const noexcept { return z; }
@@ -92,7 +124,11 @@ namespace age {
             vel.reset();
         }
 
-        void onCollision(Entity& other);
+        void onCollision(Entity& other) {
+            for (auto& collision : collisions) {
+                collision->onCollision(*this, other);
+            }
+        };
 
         void setPos(const Vec& newPos) noexcept { pos = newPos; }
         void setVel(const Vec& newVel) noexcept { vel = newVel; }
