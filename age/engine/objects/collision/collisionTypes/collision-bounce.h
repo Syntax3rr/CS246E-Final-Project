@@ -29,6 +29,8 @@ namespace age {
                 entity.setVel(Vec{ entity.getVel().x, -entity.getVel().y });
             }
         }
+
+        std::unique_ptr<EntityCollision> clone() const override { return std::make_unique<CollisionBounce>(*this); }
     };
 }
 

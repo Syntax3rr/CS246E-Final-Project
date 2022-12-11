@@ -23,14 +23,12 @@ namespace age {
         
     public:
         void update();
+
         void addEntity(Entity& entity);
         std::vector<Entity> getEntities();
-        void setTextLine(int i, std::string text) {
-            textLines[i] = text;
-        };
-        std::string* getTextLines() {
-            return textLines;
-        };
+
+        void setTextLine(int i, std::string text) { textLines[i] = text; };
+        std::string* getTextLines() { return textLines; };
     };
 }
 

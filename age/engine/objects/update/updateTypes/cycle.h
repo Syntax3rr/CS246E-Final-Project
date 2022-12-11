@@ -16,6 +16,8 @@ namespace age {
                 entity.advanceState();
             }
         };
+
+        std::unique_ptr<UpdateType> clone() const override { return std::make_unique<Cycle>(*this); }
     };
 }
 

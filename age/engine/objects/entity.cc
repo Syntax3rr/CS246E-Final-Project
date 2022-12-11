@@ -7,30 +7,42 @@ using std::gcd;
 using std::abs;
 namespace age {
     void Entity::setState(int newState) {
-        if (newState >= stateCount || newState < 0) throw std::out_of_range("Invalid state.");
+        if (newState >= sprites.size() || newState < 0) throw std::out_of_range("Invalid state.");
         currentState = newState;
     }
 
+    void Entity::loadVelocity() {
+        for (auto& movement : movements) movement->move(velBuffer); //Get the next movements
+        int velGCD = gcd(abs(velBuffer.x), abs(velBuffer.y));
+        velStep = Vec{ velBuffer.x / velGCD, velBuffer.y / velGCD }; //Get the natural number step ratio.
+    }
+
     void Entity::stepVelocity() {
-        if (movements.size() && velBuffer == 0 && velStep == 0) { //If we're starting a new movement action
-            for (auto& movement : movements) movement->move(velBuffer); //Get the next movements
-            int velGCD = gcd(abs(velBuffer.x), abs(velBuffer.y));
-            velStep = Vec{ velBuffer.x / velGCD, velBuffer.y / velGCD }; //Get the natural number step ratio.
+        if (velBuffer == 0) return;
+
+        if (velStepBuffer == 0) {
+            velStepBuffer = velStep;
         } else {
-            if (velStepBuffer == 0) {
-                velStepBuffer = velStep;
-                velBuffer -= velStep;
+            // If the velocity is changing directions, we need to make sure that the step buffer is also changing directions.
+            if (velBuffer.x > 0 && velStepBuffer.x < 0 || velBuffer.x < 0 && velStepBuffer.x > 0) velStepBuffer.x = -velStepBuffer.x;
+            if (velBuffer.y > 0 && velStepBuffer.y < 0 || velBuffer.y < 0 && velStepBuffer.y > 0) velStepBuffer.y = -velStepBuffer.y;
+
+            // If the velocity is shirinking, we need to make sure that the step buffer is also shrinking.
+            if (velBuffer.x < 0 && velStepBuffer.x > velBuffer.x || velBuffer.x > 0 && velStepBuffer.x < velBuffer.x) velStepBuffer.x = velBuffer.x;
+            if (velBuffer.y < 0 && velStepBuffer.y > velBuffer.y || velBuffer.y > 0 && velStepBuffer.y < velBuffer.y) velStepBuffer.y = velBuffer.y;
+
+            if (velStepBuffer.x == velStepBuffer.y) {
+                velStepBuffer -= Vec{ 1, 1 };
+                vel += Vec{ 1, 1 };
+                velBuffer -= Vec{ 1, 1 };
+            } else if (velStepBuffer.x > velStepBuffer.y) {
+                velStepBuffer.x--;
+                vel.x++;
+                velBuffer.x--;
             } else {
-                if (velStepBuffer.x == velStepBuffer.y) {
-                    velStepBuffer -= Vec{ 1, 1 };
-                    vel += Vec{ 1, 1 };
-                } else if (velStepBuffer.x > velStepBuffer.y) {
-                    velStepBuffer.x--;
-                    vel.x++;
-                } else {
-                    velStepBuffer.y--;
-                    vel.y++;
-                }
+                velStepBuffer.y--;
+                vel.y++;
+                velBuffer.y--;
             }
         }
     }
@@ -42,7 +54,7 @@ namespace age {
             pos.x >= other.pos.x + other.getWidth() || // This is to the right of other.
             pos.y + getHeight() <= other.pos.y || // This is above other.
             pos.y >= other.pos.y + other.getHeight() // This is below other.
-        ) return false;
+            ) return false;
 
         // Check if the sprites overlap.
         // X and Y offsets

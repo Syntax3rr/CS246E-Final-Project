@@ -10,6 +10,8 @@ namespace age {
             vel += velocity;
             return vel;
         }
+
+        std::unique_ptr<EntityMovement> clone() const override { return std::make_unique<MoveInLine>(*this); }
     };
 }
 

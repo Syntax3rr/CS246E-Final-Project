@@ -29,6 +29,10 @@ namespace age {
             }
             return vel;
         }
+
+        const bool isPlayerControlled() const override { return true; }
+
+        std::unique_ptr<EntityMovement> clone() const override { return std::make_unique<MoveByUser>(*this); }
     };
 }
 

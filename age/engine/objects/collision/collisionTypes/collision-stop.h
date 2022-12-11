@@ -9,6 +9,8 @@ namespace age {
         void onCollision(Entity& entity, Entity& other) override {
             entity.stop();
         }
+
+        std::unique_ptr<EntityCollision> clone() const override { return std::make_unique<CollisionStop>(*this); }
     };
 }
 

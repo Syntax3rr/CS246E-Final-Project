@@ -6,13 +6,25 @@
 
 namespace age {
     void Engine::update() {
-        for (auto i = entities.begin(); i != entities.end(); ++i) { //Entity position update
+        for (auto i = entities.begin(); i != entities.end(); ++i) { // Load Enitity Velocities
             for (auto j = i->second.begin(); j != i->second.end(); ++j) {
                 Entity entity = *j;
                 entity.update(); //General update call
-                //Check if the entity needs to be culled
-                
+                entity.loadVelocity();
+            }
+        }
+
+        for (auto i = entities.begin(); i != entities.end(); ++i) { //Entity position update
+            for (auto j = i->second.begin(); j != i->second.end(); ++j) {
+                Entity entity = *j;
+
                 while (entity.getVel() != 0) {
+                    int x = entity.getPos().x;
+                    int y = entity.getPos().y;
+                    int width = entity.getWidth();
+                    int height = entity.getHeight();
+                    bool timeoutCheck = false;
+
                     entity.stepVelocity();
                     for (auto k = j + 1; k != i->second.end(); ++k) {
                         Entity other = *k;
@@ -21,15 +33,21 @@ namespace age {
                             other.onCollision(entity);
                         }
                     }
-                    if (solidBorders || entity.playerControlled) {
+
+                    if (solidBorders || entity.isPlayerControlled()) {
                         //Check for collision with Canvas borders, which are ceneterd inside the screen borders.
-                        //If going into a corner
-                        if (entity.getPos().y < C_TOP) entity.onCollision(edges[0]);
-                        if (entity.getPos().x < C_LEFT) entity.onCollision(edges[1]);
-                        if (entity.getPos().x + entity.getWidth() > C_RIGHT) entity.onCollision(edges[3]);
-                        if (entity.getPos().y + entity.getHeight() > C_BOTTOM) entity.onCollision(edges[4]);
-                    } else if (entity.getPos().x < 0 || entity.getPos().y < 0 || entity.getPos().x + entity.getWidth() > C_WIDTH || entity.getPos().y + entity.getHeight() > C_HEIGHT) {
-                        entity.onCollision(edges[0]);
+                        if (y < C_TOP) entity.onCollision(edges[0]);
+                        if (x < C_LEFT) entity.onCollision(edges[1]);
+                        if (x + width > C_RIGHT) entity.onCollision(edges[3]);
+                        if (y + height > C_BOTTOM) entity.onCollision(edges[4]);
+                    } else if (!timeoutCheck && (x < 0 || y < 0 || x + width > C_WIDTH || y + height > C_HEIGHT)) {
+                        if (++(entity.despawnTimer) > DESPAWN_TIME) {
+                            i->second.erase(j);
+                            break;
+                        }
+                        timeoutCheck = true;
+                    } else {
+                        entity.despawnTimer = timeoutCheck ? entity.despawnTimer : 0;
                     }
                     entity.updatePosition();
                 }
