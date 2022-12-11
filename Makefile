@@ -1,15 +1,26 @@
+#Makefile to build the program from src, storing object and dependency files in /build
 CXX = g++
-CXXFLAGS = -std=c++14 -Werror -MMD -lncurses -g
-EXEC = game
-OBJECTS = main.o # add other object files here
-DEPENDS = ${OBJECTS:.o=.d}
+CXXFLAGS = -std=c++14 -Werror -MMD -g
+LDFLAGS = -lncurses
+EXEC = a.out 
+
+SRCDIR = src
+BUILDDIR = build
+
+SOURCES := $(shell find $(SRCDIR) -name '*.cc')
+OBJECTS := $(patsubst $(SRCDIR)/%.cc, $(BUILDDIR)/%.o, $(SOURCES))
+DEPENDS = ${OBJECTS:%.o=%.d}
 
 ${EXEC}: ${OBJECTS}
-	${CXX} ${OBJECTS} ${GIVEN} -o ${EXEC} ${CXXFLAGS}
+	${CXX} ${CXXFLAGS} ${OBJECTS} ${GIVEN} -o ${EXEC} ${LDFLAGS}
 
--include ${DEPENDS}
+-include $(OBJECTS:%.o=%.d)
 
+${BUILDDIR}/%.o: ${SRCDIR}/%.cc
+	@mkdir -p $(dir $@)
+	${CXX} ${CXXFLAGS} -c $< -o $@
+	
 .PHONY: clean
 
 clean:
-	rm ${OBJECTS} ${EXEC} ${DEPENDS}
+	rm -rf ${BUILDDIR} ${EXEC}
