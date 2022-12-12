@@ -13,14 +13,13 @@ namespace age {
     class Sprite;
 
     class Engine {
+    protected:
         std::map<int, std::vector<Entity*>> entities;
         std::string textLines[3];
     public:
         Input* const input;
     private:
         bool solidBorders = true;
-
-        std::vector<void(*)(Engine&)> onUpdateFunctions;
 
         vector<Entity> edges {
             Entity{0, 0, 0, Sprite{S_WIDTH, 1, '#'}},
@@ -29,31 +28,19 @@ namespace age {
             Entity{0, C_HEIGHT + 1, 0, Sprite{S_WIDTH, 1, '#'}}
         };
         
+    protected:
+        virtual void onUpdate() {};
+
     public:
-        Engine(Input& input, bool solidBorders = false, initializer_list<void(*)(Engine&)> updateList = {}): entities(), textLines{""}, input(&input), solidBorders(solidBorders), onUpdateFunctions() {
-            onUpdateFunctions.reserve(updateList.size());
-            for (auto i : updateList) {
-                onUpdateFunctions.push_back(i);
-            }
-        };
+        Engine(Input& input, bool solidBorders = false);
 
         void update();
 
-        void addEntity(Entity& entity);
+        void addEntity(Entity* entity);
         std::vector<Entity*> getEntities();
 
         void setTextLine(int i, std::string text) { textLines[i] = text; };
         std::string* getTextLines() { return textLines; };
-
-        void attachUpdateFunction(void(*function)(Engine&)) {
-            onUpdateFunctions.push_back(function);
-        };
-
-        void onUpdate() {
-            for (auto i : onUpdateFunctions) {
-                i(*this);
-            }
-        };
     };
 }
 

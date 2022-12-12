@@ -1,14 +1,20 @@
 #include "curse-input.h"
 #include <ncurses.h>
+#include <string>
 
 namespace age {
-    CurseInput::CurseInput() {}
+    CurseInput::CurseInput() {
+        setlocale(LC_ALL, "");
+        cbreak();
+        keypad(stdscr, TRUE);
+        nodelay(stdscr, TRUE);
+    }
 
     void CurseInput::updateKeyStates() {
-        int ch;
         clearKeys();
-        while (ch = getch() != ERR) {
+        int ch;
+        while ((ch = getch()) != ERR) {
             setKey(ch, true);
         }
-    }             
+    }
 }

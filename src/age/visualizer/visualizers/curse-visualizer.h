@@ -7,6 +7,7 @@ namespace age {
     class CurseVisualizer: public Visualizer {       
     public:
         CurseVisualizer(Engine& engine);
+        ~CurseVisualizer();
         void updateScreen() override;
     };
 }

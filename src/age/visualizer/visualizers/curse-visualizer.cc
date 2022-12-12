@@ -28,6 +28,10 @@ namespace age {
             }
         }
     }
+    
+    CurseVisualizer::~CurseVisualizer() {
+        endwin();
+    }
 
     void CurseVisualizer::updateScreen() {
         //Draw Canvas
@@ -39,6 +43,8 @@ namespace age {
 
         //Draw Text
         for (int i = 0; i < 3; i++) {
+            move(C_HEIGHT + 2 + i, 1);
+            clrtoeol();
             mvaddstr(C_HEIGHT + 2 + i, 1, getTextLine(i).c_str());
         }
 

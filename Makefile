@@ -1,6 +1,6 @@
 #Makefile to build the program from src, storing object and dependency files in /build
 CXX = g++
-CXXFLAGS = -std=c++14 -Werror -MMD -g
+CXXFLAGS = -std=c++14 -Wall -MMD -g
 LDFLAGS = -lncurses
 EXEC = a.out 
 

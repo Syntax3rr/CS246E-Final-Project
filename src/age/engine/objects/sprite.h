@@ -13,9 +13,9 @@ namespace age {
     using std::get;
     class Sprite {
         vector<vector<char>> sprite;
-        int width, height;
+        size_t width, height;
     public:
-        Sprite(std::initializer_list<tuple<int, int, char>> bitmap) {
+        Sprite(std::initializer_list<tuple<size_t, size_t, char>> bitmap) {
             width = 0, height = 0;
             for (auto t : bitmap) { // Insert the bitmap into the sprite.
                 if (get<0>(t) >= width) width = get<0>(t) + 1;
@@ -25,7 +25,7 @@ namespace age {
                 sprite[get<1>(t)][get<0>(t)] = get<2>(t);
             }
         }
-        Sprite(int width, int height, char fill): sprite(vector<vector<char>>(height, vector<char>(width, fill))), width(width), height(height) {}
+        Sprite(size_t width, size_t height, char fill): sprite(vector<vector<char>>(height, vector<char>(width, fill))), width(width), height(height) {}
         Sprite(char c): sprite(vector<vector<char>>(1, vector<char>(1, c))), width(1), height(1) {}
         Sprite(string str): sprite(vector<vector<char>>(1, vector<char>(str.begin(), str.end()))), width(str.size()), height(1) {}
         Sprite(const Sprite& other): sprite(other.sprite), width(other.width), height(other.height) {}
@@ -36,14 +36,24 @@ namespace age {
             height = other.height;
             return *this;
         }
+        Sprite& operator=(Sprite&& other) {
+            std::swap(sprite, other.sprite);
+            width = other.width;
+            height = other.height;
+            return *this;
+        }
+        ~Sprite() {
+            sprite.clear();
+        }
 
         vector<vector<char>> getData() const noexcept { return sprite; }
-        char getAt(int x, int y) const noexcept {
+        char getAt(size_t x, size_t y) const noexcept {
             if (x < 0 || x >= width || y < 0 || y >= height) return ' ';
+            if (sprite[y].size() <= x) return ' ';
             return sprite[y][x];
         };
-        int getWidth() const noexcept { return width; }
-        int getHeight() const noexcept { return height; }
+        size_t getWidth() const noexcept { return width; }
+        size_t getHeight() const noexcept { return height; }
     };
 }
 

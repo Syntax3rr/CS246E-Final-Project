@@ -5,24 +5,33 @@
 #include <memory>
 #include <algorithm>
 #include "../game-constants.h"
-#include "../../engine-constants.h"
-#include "../../helpers/math/vec.h"
-#include "../../helpers/functional-vector-transform.h"
-#include "../../age/engine/objects/movement/movementTypes/move-by-user.h"
+#include "../../age/engine-constants.h"
+#include "../../age/helpers/math/vec.h"
 #include "../../age/engine/objects/entity.h"
+#include "../../age/input/input.h"
 
-using namespace age;
-using std::vector;
-using std::unique_ptr;
 namespace bulletHell {
-    age::Input;
+    using namespace age;
+    using std::vector;
+    using std::unique_ptr;
+
+    class BulletHell;
 
     class Player: public age::Entity {
         age::Input& input;
         int lives = MAX_LIVES;
+        int invincibilityTimer = 0;
 
     public:
-        Player(int x, int y, int z, age::Sprite sprite, age::Input& input): age::Entity(x, y, z, sprite, true, {}, {}, {std::make_unique<MoveByUser>(MoveByUser(input))}), input(input) {}
+        Player(age::Sprite sprite, BulletHell& engine);
+
+        bool onUpdate();
+
+        void damage();
+
+        int getLives() const { return lives; }
+
+        ~Player() {}
     };
 }
 

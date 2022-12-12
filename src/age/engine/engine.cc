@@ -6,12 +6,25 @@
 #include <cmath>
 #include <utility>
 namespace age {
+    Engine::Engine(Input& input, bool solidBorders): entities(), textLines{""}, input(&input), solidBorders(solidBorders) {}
+
     void Engine::update() {
         input->update();
         onUpdate();
         for (auto i = entities.begin(); i != entities.end(); ++i) { // Load Enitity Velocities
             for (auto j = i->second.begin(); j != i->second.end(); ++j) {
                 Entity& entity = **j;
+
+                //Despawn entities that are out of bounds
+                if (entity.getPos().x < 0 || entity.getPos().y < 0 || entity.getPos().x + entity.getWidth() > C_WIDTH || entity.getPos().y + entity.getHeight() > C_HEIGHT) {
+                    if (!entity.isPersistant() && (++(entity.despawnTimer) > DESPAWN_TIME || entity.getPos().length() > 200) ) { // If out of bounds for 10 frames or far enough away, despawn. (length() > X is from the top-left corner, but at that point it's probably not worth keeping track of regardless)
+                        i->second.erase(j);
+                        break;
+                    }
+                } else {
+                    entity.despawnTimer = 0;
+                }
+
                 entity.update(); //General update call
                 entity.loadVelocity();
             }
@@ -20,13 +33,12 @@ namespace age {
         for (auto i = entities.begin(); i != entities.end(); ++i) { //Entity position update
             for (auto j = i->second.begin(); j != i->second.end(); ++j) {
                 Entity& entity = **j;
-
                 while (entity.getVel() != 0) {
                     int x = entity.getPos().x;
                     int y = entity.getPos().y;
                     int width = entity.getWidth();
                     int height = entity.getHeight();
-                    bool timeoutCheck = false;
+
 
                     entity.stepVelocity();
                     for (auto k = j + 1; k != i->second.end(); ++k) {
@@ -43,23 +55,16 @@ namespace age {
                         if (x < C_LEFT) entity.onCollision(edges[1]);
                         if (x + width > C_RIGHT) entity.onCollision(edges[3]);
                         if (y + height > C_BOTTOM) entity.onCollision(edges[4]);
-                    } else if (!timeoutCheck && (x < 0 || y < 0 || x + width > C_WIDTH || y + height > C_HEIGHT)) {
-                        if (!entity.isPersistant() && ++(entity.despawnTimer) > DESPAWN_TIME) {
-                            i->second.erase(j);
-                            break;
-                        }
-                        timeoutCheck = true;
-                    } else {
-                        entity.despawnTimer = timeoutCheck ? entity.despawnTimer : 0;
                     }
+
                     entity.updatePosition();
                 }
             }
         }
     }
 
-    void Engine::addEntity(Entity& entity) {
-        entities[entity.getZ()].push_back(&entity);
+    void Engine::addEntity(Entity* entity) {
+        entities[entity->getZ()].push_back(entity);
     }
 
     std::vector<Entity*> Engine::getEntities() {

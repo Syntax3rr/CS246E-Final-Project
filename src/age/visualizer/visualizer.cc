@@ -5,29 +5,23 @@
 #include <iostream>
 #include <chrono>
 #include <unistd.h>
+#include <ncurses.h>
 
 namespace age {
     void Visualizer::loadCanvas() {
-        std::vector<Entity*> entities = engine->getEntities();
-
-        //Clear the canvas
+        std::vector<Entity*> entities = engine->getEntities(); // Note the entities are sorted by their z-index.
+        move(S_HEIGHT, 0);
         for (int i = 0; i < C_HEIGHT; i++) {
             for (int j = 0; j < C_WIDTH; j++) {
-                tlcanvas[i][j] = ' ';
-            }
-        }
-        //Load the canvas
-        for (auto i : entities) {
-            Sprite sprite = i->getSprite();
-            Vec pos = i->getPos();
-            std::vector<std::vector<char>> spriteData = sprite.getData();
+                auto k = std::find_if(entities.begin(), entities.end(), [i, j](Entity* e) {
+                    char c = e->getAt(j, i);
+                    return c > 32 && c < 127;
+                    });
 
-            for (int j = 0; j < sprite.getHeight(); j++) {
-                for (int k = 0; k < sprite.getWidth(); k++) {
-                    tlcanvas[pos.y + j][pos.x + k] = spriteData[j][k] == '\0' ? ' ' : spriteData[j][k];
-                }
+                tlcanvas[i][j] = k == entities.end() ? ' ' : (*k)->getAt(j, i);
             }
         }
+        refresh();
     }
 
     std::string Visualizer::getTextLine(int i) const {
@@ -46,11 +40,10 @@ namespace age {
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> elapsed = end - start;
             std::chrono::duration<double, std::milli> sleepTime = std::chrono::duration<double, std::milli>(1000.0 / FRAME_RATE) - elapsed;
-            engine->setTextLine(0, "Frame Time: " + std::to_string(elapsed.count()) + "ms");
+            struct timespec ts = {0, (long) (sleepTime.count() * 1000000)};
             if (sleepTime.count() > 0) {
-                usleep(sleepTime.count());
+                nanosleep(&ts, NULL);
             }
-
         }
     }
 }

@@ -6,9 +6,17 @@
 // Mathematical 2D vector class for position.
 struct Vec {
     int x, y;
+    Vec() noexcept: x(0), y(0) {}
+    Vec(int x, int y) noexcept: x(x), y(y) {}
+    
     Vec& reset() noexcept { 
         x = 0; 
         y = 0; 
+        return *this; 
+    }
+    Vec& set(int x, int y) noexcept { 
+        this->x = x; 
+        this->y = y; 
         return *this; 
     }
     bool operator==(const Vec& other) const noexcept { 
